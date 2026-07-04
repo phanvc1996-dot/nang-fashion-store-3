@@ -12,7 +12,7 @@ function LoginModal({ onClose, onLoginSuccess }) {
     setError(null);
 
     // 2. Tiến hành kiểm tra điều kiện mật khẩu ở Frontend trước
-    const passwordValidation = validatePassword(password);
+    const passwordValidation = validatePassword(password, username);
     if (!passwordValidation.isValid) {
       setError(passwordValidation.errorMsg); // Hiển thị lỗi điều kiện ra màn hình
       return; // Chặn lại không cho chạy xuống đoạn gọi API bên dưới
