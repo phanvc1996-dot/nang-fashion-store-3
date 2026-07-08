@@ -2,38 +2,43 @@ import React, { useState, useEffect } from "react";
 import Header from "./components/Header";
 import ProductList from "./components/ProductList";
 import Cart from "./components/Cart";
-import LoginModal from "./components/LoginModal"; // Import LoginModal mới
+import LoginModal from "./components/LoginModal";
+import CheckoutModal from "./components/CheckoutModal"; // 1. Import CheckoutModal mới vào
 
 function App() {
-  // Quản lý trạng thái Giỏ hàng
   const [cart, setCart] = useState(() => {
     const savedCart = localStorage.getItem("my_cart");
     return savedCart ? JSON.parse(savedCart) : [];
   });
 
-  // Quản lý trạng thái Token đăng nhập từ localStorage
   const [token, setToken] = useState(() => {
     return localStorage.getItem("user_token") || null;
   });
 
-  // Quản lý trạng thái đóng/mở Form Đăng nhập
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  // 2. Khai báo state đóng mở của cổng Thanh toán QR
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("my_cart", JSON.stringify(cart));
   }, [cart]);
 
-  // Hàm xử lý khi Đăng nhập thành công
   const handleLoginSuccess = (userToken) => {
     localStorage.setItem("user_token", userToken);
     setToken(userToken);
-    setIsLoginOpen(false); // Đóng modal luôn
+    setIsLoginOpen(false);
   };
 
-  // Hàm xử lý khi Đăng xuất
   const handleLogout = () => {
     localStorage.removeItem("user_token");
     setToken(null);
+  };
+
+  // 3. Hàm xử lý khi bấm hoàn tất thanh toán thành công
+  const handlePaymentSuccess = () => {
+    alert("Cảm ơn bạn đã mua hàng! Đơn hàng hệ thống đang được xử lý.");
+    setCart([]); // Xóa sạch giỏ hàng ở bộ nhớ State
+    setIsCheckoutOpen(false); // Đóng hộp thoại
   };
 
   const addToCart = (product) => {
@@ -74,7 +79,6 @@ function App() {
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-8 bg-gray-50 min-h-screen">
-      {/* Truyền các props cần thiết cho việc ẩn hiện Login/Logout vào Header */}
       <Header
         token={token}
         onLogout={handleLogout}
@@ -92,14 +96,23 @@ function App() {
           totalAmount={totalAmount}
           onUpdateQuantity={updateQuantity}
           onRemoveFromCart={removeFromCart}
+          onCheckout={() => setIsCheckoutOpen(true)} // 4. Kích hoạt mở Modal thanh toán tại đây
         />
       </section>
 
-      {/* Điều kiện hiển thị Form Đăng nhập dạng Popup Modal */}
       {isLoginOpen && (
         <LoginModal
           onClose={() => setIsLoginOpen(false)}
           onLoginSuccess={handleLoginSuccess}
+        />
+      )}
+
+      {/* 5. Khối điều kiện render giao diện cổng quét mã QR */}
+      {isCheckoutOpen && (
+        <CheckoutModal
+          totalAmount={totalAmount}
+          onClose={() => setIsCheckoutOpen(false)}
+          onPaymentSuccess={handlePaymentSuccess}
         />
       )}
     </section>

@@ -6,6 +6,7 @@ function Cart({
   totalAmount,
   onUpdateQuantity,
   onRemoveFromCart,
+  onCheckout, // 1. Nhận thêm prop xử lý thanh toán từ App.jsx
 }) {
   return (
     <section className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit sticky top-6">
@@ -84,7 +85,11 @@ function Cart({
                 ${totalAmount.toFixed(2)}
               </span>
             </section>
-            <button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 rounded-lg text-sm transition-colors cursor-pointer">
+            {/* 2. Gán sự kiện click kích hoạt onCheckout */}
+            <button
+              onClick={onCheckout}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 rounded-lg text-sm transition-colors cursor-pointer"
+            >
               Tiến hành thanh toán
             </button>
           </section>
